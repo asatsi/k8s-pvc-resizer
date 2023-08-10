@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: k8s-rsync-copier
+  name: k8s-rsync-copier
+  namespace: XXX_NAMESPACE_XXX
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: XX_1_XXGi
+  storageClassName: default
+  volumeMode: Filesystem

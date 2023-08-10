@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-rsync-copier-deployment-name
+  labels:
+    app: k8s-rsync-copier-deployment-name
+    appName: k8s-rsync-copier-deployment-name
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: k8s-rsync-copier
+      app.kubernetes.io/name: k8s-rsync-copier
+  template:
+    metadata:
+      labels:
+        app: k8s-rsync-copier-deployment-name
+        appName: k8s-rsync-copier-deployment-name
+        owner: k8s
+        app.kubernetes.io/instance: k8s-rsync-copier
+        app.kubernetes.io/name: k8s-rsync-copier
+    spec:
+      containers:
+      - name: k8s-rsync-copier
+        image: asatsi/k8s-rsync-copier:1.0
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        env:
+         - name: SOURCE_PVC
+           value: "/source-data/"
+         - name: TARGET_PVC
+           value: "/target-data"
+        resources:
+          requests:
+            cpu: 100m
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        volumeMounts:
+        - mountPath: /var
+          name: var-volume
+        - mountPath: /tmp
+          name: tmp-volume
+        - mountPath: /source-data
+          name: source-data
+        - mountPath: /target-data
+          name: target-data
+      volumes:
+        - name: var-volume
+          emptyDir: {}
+        - name: tmp-volume
+          emptyDir: {}
+        - name: source-data
+          persistentVolumeClaim:
+            claimName: XXX_SOURCE_PVC_XXX
+        - name: target-data
+          persistentVolumeClaim:
+            claimName: XXX_TARGET_PVC_XXX
